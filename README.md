@@ -18,6 +18,14 @@ Install pm2 for running in prod mode
 
 `npm i -g pm2`
 
+### create .env file with values
+
+`DB_USER_NAME=xxxx
+DB_PASSWORD=xxxx
+DB_HOST=xxxx
+PORT=xxxx
+DB_NAME=xxx`
+
 ### Run the application
 
 For dev mode
