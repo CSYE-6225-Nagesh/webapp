@@ -11,19 +11,26 @@ export const updateUser = (req, res) => {
   try {
     //Check if user exists
     User.findOne({
-      where: { id: req.params.userId },
+      where: { username: newUser.name },
     })
       .then((user) => {
+        console.log(user);
         if (user) {
+          console.log("User exists");
           //Check if passwords are same
           const isPasswordCorrect = bcrypt.compareSync(
             newUser.pass,
             user.password
           );
-          const isUsernameCorrect = newUser.name === user.username;
 
-          if (isPasswordCorrect && isUsernameCorrect) {
+          if (isPasswordCorrect) {
             //Check if unauthenticated fields are updated
+            if (user.id != req.params.userId) {
+              console.log("Id wrong");
+              return res
+                .status(403)
+                .json({ message: "The user action Forbidden" });
+            }
             if (
               req.body.id ||
               req.body.account_created ||
@@ -71,19 +78,19 @@ export const updateUser = (req, res) => {
         return res.status(500).json({ message: err.message });
       });
   } catch (err) {
-    return es.status(400).json(err.message);
+    return res.status(400).json(err.message);
   }
 };
 
 //Get User
 export const getUser = (req, res) => {
-  console.log("Enpoint getUser has been hit");
+  console.log("Endpoint getUser has been hit");
   //Get user from updated req
   const newUser = req.authUser;
   try {
     //Check if user exists
     User.findOne({
-      where: { id: req.params.userId },
+      where: { username: newUser.name },
     })
       .then((user) => {
         if (user) {
@@ -93,14 +100,14 @@ export const getUser = (req, res) => {
             user.password
           );
 
-          const isUsernameCorrect = newUser.name === user.username;
-
-          console.log(isUsernameCorrect);
-
-          console.log(isPasswordCorrect);
-
-          if (!isPasswordCorrect || !isUsernameCorrect) {
-            res.status(401).json({ message: "The user is unauthorized" });
+          if (!isPasswordCorrect) {
+            return res
+              .status(401)
+              .json({ message: "The user is unauthorized" });
+          } else if (isPasswordCorrect && user.id != req.params.userId) {
+            return res
+              .status(403)
+              .json({ message: "The user action Forbidden" });
           } else {
             const {
               id,
@@ -122,7 +129,7 @@ export const getUser = (req, res) => {
           }
         } else {
           console.log("No such user");
-          res.status(404).json({ message: "No such user" });
+          return res.status(404).json({ message: "No such user" });
         }
       })
       .catch((err) => {
