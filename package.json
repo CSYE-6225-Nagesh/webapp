@@ -1,0 +1,37 @@
+{
+  "name": "user-api-express",
+  "version": "1.0.0",
+  "description": "node express server for user api",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "prod": "pm2 start index.js",
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "basic-auth": "^2.0.1",
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "email-validator": "^2.0.4",
+    "express": "^4.18.2",
+    "jest": "^29.4.1",
+    "mysql2": "^3.1.0",
+    "pm2": "^5.2.2",
+    "save-dev": "^0.0.1-security",
+    "sequelize": "^6.28.0",
+    "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/preset-env": "^7.20.2",
+    "babel-jest": "^29.4.1",
+    "nodemon": "^2.0.20"
+  }
+}
