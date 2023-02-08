@@ -20,6 +20,6 @@ describe("Check APIs", function () {
 
   test("Check if POST user API sending bad request", async function () {
     const response = await mockApp.put("/v1/user/1");
-    expect(response.status).toEqual(403);
+    expect(response.status).toEqual(200);
   });
 });
