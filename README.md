@@ -20,6 +20,8 @@ Install pm2 for running in prod mode
 
 ### create .env file with values
 
+will be moved to system variables
+
 ```
 DB_USER_NAME=xxxx
 
@@ -42,3 +44,5 @@ For dev mode
 For production
 
 `npm run prod`
+
+
