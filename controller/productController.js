@@ -41,7 +41,13 @@ export const updateProduct = async (req, res) => {
       }
 
       //Check if required fields are send
-      if (!name || !description || !sku || !manufacturer || !quantity) {
+      if (
+        !name ||
+        !description ||
+        !sku ||
+        !manufacturer ||
+        quantity == undefined
+      ) {
         return res.status(400).json({
           message:
             "Bad Request: Required fields cannot be empty (name, description, sku, manufacturer, quantity)",
@@ -104,7 +110,13 @@ export const createProduct = async (req, res) => {
       });
     }
     //Check if required fields are send
-    if (!name || !description || !sku || !manufacturer || !quantity) {
+    if (
+      !name ||
+      !description ||
+      !sku ||
+      !manufacturer ||
+      quantity === undefined
+    ) {
       return res.status(400).json({
         message:
           "Bad Request: Required fields cannot be empty (name, description, sku, manufacturer, quantity)",
@@ -182,7 +194,15 @@ export const patchProduct = async (req, res) => {
         return res.status(403).json({ message: "The user action Forbidden" });
       }
 
-      if (!(name || description || sku.trim() || manufacturer || quantity)) {
+      if (
+        !(
+          name ||
+          description ||
+          (sku && sku.trim()) ||
+          manufacturer ||
+          quantity !== undefined
+        )
+      ) {
         return res.status(400).json({
           message: "Bad Request: update with proper paramters",
         });
