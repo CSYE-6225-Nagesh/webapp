@@ -1,6 +1,13 @@
 import Sequelize from "sequelize";
 import * as dotenv from "dotenv";
-dotenv.config();
+import os from "os";
+import path from "path";
+
+dotenv.config({
+  path: path.resolve(os.homedir() + "/Documents/nodeEnv/.env"),
+});
+
+console.log("DB Name", process.env.DB_NAME);
 //DB Connection
 const sequelize = new Sequelize(
   process.env.DB_NAME,

@@ -9,7 +9,6 @@ export const getProduct = async (req, res) => {
     if (product) {
       res.status(200).json(product);
     } else {
-      console.log("No such product");
       return res.status(404).json({ message: "No such product" });
     }
   } catch (err) {
@@ -32,11 +31,12 @@ export const updateProduct = async (req, res) => {
       if (
         req.body.date_added ||
         req.body.date_last_updated ||
-        req.body.owner_user_id
+        req.body.owner_user_id ||
+        req.body.id
       ) {
         return res.status(400).json({
           message:
-            "Bad Request: Cannot update date_added,date_last_updated, owner_user_id fields",
+            "Bad Request: Cannot update id, date_added,d ate_last_updated, owner_user_id fields",
         });
       }
 
@@ -47,16 +47,17 @@ export const updateProduct = async (req, res) => {
             "Bad Request: Required fields cannot be empty (name, description, sku, manufacturer, quantity)",
         });
       }
-      if (isNaN(quantity)) {
+      if (!Number.isInteger(quantity)) {
         return res.status(400).json({
-          message: "Bad Request: quantity should be number",
+          message: "Bad Request: quantity should be integer",
         });
       }
 
-      if (quantity < 0 && quantity > 100) {
-        return res
-          .status(400)
-          .json({ message: "Bad Request: Quantity should be greater than 1" });
+      if (quantity < 0 || quantity > 100) {
+        return res.status(400).json({
+          message:
+            "Bad Request: Quantity should be greater than 0 and less than 100",
+        });
       }
 
       product.name = name ? name : product.name;
@@ -73,7 +74,7 @@ export const updateProduct = async (req, res) => {
         if (
           error.errors &&
           error.errors.length > 0 &&
-          error.errors[0].path === "sku_UNIQUE"
+          error.errors[0].path === "sku"
         ) {
           return res.status(400).json({ message: "SKU already exists" });
         }
@@ -88,18 +89,18 @@ export const updateProduct = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  console.log("user id", req.user.id);
   console.log("create user /v1/user/ has been hit");
   const { name, description, sku, manufacturer, quantity } = req.body;
   try {
     if (
       req.body.date_added ||
       req.body.date_last_updated ||
-      req.body.owner_user_id
+      req.body.owner_user_id ||
+      req.body.id
     ) {
       return res.status(400).json({
         message:
-          "Bad Request: Cannot update date_added,date_last_updated, owner_user_id fields",
+          "Bad Request: Cannot create with id, date_added, date_last_updated, owner_user_id fields",
       });
     }
     //Check if required fields are send
@@ -110,20 +111,19 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    if (isNaN(quantity)) {
+    if (!Number.isInteger(quantity)) {
       return res.status(400).json({
-        message: "Bad Request:  quantity should be number",
+        message: "Bad Request: quantity should be number",
       });
     }
 
-    if (quantity < 0 && quantity > 100) {
+    if (quantity < 0 || quantity > 100) {
       return res.status(400).json({
         message:
           "Bad Request: Quantity should be greater than 1 and less than 100",
       });
     }
 
-    console.log(req.user.id);
     const product = {
       name,
       description,
@@ -141,7 +141,7 @@ export const createProduct = async (req, res) => {
       if (
         error.errors &&
         error.errors.length > 0 &&
-        error.errors[0].path === "sku_UNIQUE"
+        error.errors[0].path === "sku"
       ) {
         return res.status(400).json({ message: "SKU already exists" });
       }
@@ -154,10 +154,12 @@ export const createProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({ id: req.params.productId });
+    const product = await Product.findOne({
+      where: { id: req.params.productId },
+    });
     if (product && product.owner_user_id == req.user.id) {
       Product.destroy({ where: { id: req.params.productId } }).then((data) => {
-        return res.status(201).json(data);
+        return res.status(204).json(data);
       });
     } else {
       return res.status(403).json({ message: "Delete product forbidden" });
@@ -173,7 +175,6 @@ export const patchProduct = async (req, res) => {
       where: { id: req.params.productId },
     });
     if (product) {
-      console.log(req.body);
       const { name, description, sku, manufacturer, quantity } = req.body;
 
       //Check if unauthenticated fields are updated
@@ -197,19 +198,19 @@ export const patchProduct = async (req, res) => {
         });
       }
 
-      if (quantity != undefined && isNaN(quantity)) {
+      if (quantity !== undefined && !Number.isInteger(quantity)) {
         return res.status(400).json({
-          message: "Bad Request:  quantity should be number",
+          message: "Bad Request:  quantity should be integer",
         });
       }
 
-      if (sku === "") {
+      if (sku !== undefined && sku === "") {
         return res.status(400).json({
-          message: "Bad Request:  quantity should be number",
+          message: "Bad Request: sku should not be empty",
         });
       }
 
-      if (quantity < 0 && quantity > 100) {
+      if (quantity < 0 || quantity > 100) {
         return res.status(400).json({
           message:
             "Bad Request: Quantity should be greater than 0 and less than 100",
@@ -224,13 +225,12 @@ export const patchProduct = async (req, res) => {
 
       try {
         await product.save();
-        console.log("error");
         return res.sendStatus(204);
       } catch (error) {
         if (
           error.errors &&
           error.errors.length > 0 &&
-          error.errors[0].path === "sku_UNIQUE"
+          error.errors[0].path === "sku"
         ) {
           return res.status(400).json({ message: "SKU already exists" });
         }
