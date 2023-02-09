@@ -3,80 +3,55 @@ import emailValidator from "email-validator";
 import bcrypt from "bcryptjs";
 
 //Update User
-export const updateUser = (req, res) => {
+export const updateUser = async (req, res) => {
   console.log("updateUser");
   const { first_name, last_name, password } = req.body;
   //Get user from updated req
   const newUser = req.authUser;
   try {
     //Check if user exists
-    User.findOne({
+    const user = await User.findOne({
       where: { username: newUser.name },
-    })
-      .then((user) => {
-        console.log(user);
-        if (user) {
-          console.log("User exists");
-          //Check if passwords are same
-          const isPasswordCorrect = bcrypt.compareSync(
-            newUser.pass,
-            user.password
-          );
+    });
+    if (user) {
+      if (user.id != req.params.userId) {
+        console.log("Id wrong");
+        return res.status(403).json({ message: "The user action Forbidden" });
+      }
+      if (
+        req.body.id ||
+        req.body.account_created ||
+        req.body.account_updated ||
+        req.body.username
+      ) {
+        return res.status(400).json({
+          message: "Bad Request. Cannot update the fields entered",
+        });
+      }
+      //Check if all required fields are present
+      if (!first_name || !last_name || !password) {
+        return res.status(400).json({
+          message:
+            "Bad Request. Please enter all the required fields (Firstname, Lastname, Password).",
+        });
+      }
 
-          if (isPasswordCorrect) {
-            //Check if unauthenticated fields are updated
-            if (user.id != req.params.userId) {
-              console.log("Id wrong");
-              return res
-                .status(403)
-                .json({ message: "The user action Forbidden" });
-            }
-            if (
-              req.body.id ||
-              req.body.account_created ||
-              req.body.account_updated ||
-              req.body.username
-            ) {
-              return res.status(400).json({
-                message: "Bad Request. Cannot update the fields entered",
-              });
-            }
-            //Check if all required fields are present
-            if (!first_name || !last_name || !password) {
-              return res.status(400).json({
-                message:
-                  "Bad Request. Please enter all the required fields (Firstname, Lastname, Password).",
-              });
-            }
+      //Hashed Password
+      const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(12));
 
-            //Hashed Password
-            const hashedPassword = bcrypt.hashSync(
-              password,
-              bcrypt.genSaltSync(12)
-            );
-
-            user.first_name = first_name;
-            user.last_name = last_name;
-            user.password = hashedPassword;
-            try {
-              user.save();
-              res.sendStatus(204);
-              return;
-            } catch (err) {
-              return res.status(500).json({ message: err.message });
-            }
-          } else {
-            return res
-              .status(401)
-              .json({ message: "The user is unauthorized" });
-          }
-        } else {
-          return res.status(404).json({ message: "User does not exist" });
-        }
-      })
-      .catch((err) => {
+      user.first_name = first_name;
+      user.last_name = last_name;
+      user.password = hashedPassword;
+      try {
+        await user.save();
+        res.sendStatus(204);
+        return;
+      } catch (err) {
         return res.status(500).json({ message: err.message });
-      });
+      }
+    } else {
+      return res.status(404).json({ message: "User does not exist" });
+    }
   } catch (err) {
     return res.status(400).json(err.message);
   }
@@ -85,26 +60,20 @@ export const updateUser = (req, res) => {
 //Get User
 export const getUser = (req, res) => {
   console.log("Endpoint getUser has been hit");
-  //Get user from updated req
+
   const newUser = req.authUser;
+  console.log("req params", req.params);
+
   try {
     //Check if user exists
     User.findOne({
       where: { username: newUser.name },
     })
       .then((user) => {
+        console.log(user.id);
         if (user) {
-          console.log("User exists");
-          const isPasswordCorrect = bcrypt.compareSync(
-            newUser.pass,
-            user.password
-          );
-
-          if (!isPasswordCorrect) {
-            return res
-              .status(401)
-              .json({ message: "The user is unauthorized" });
-          } else if (isPasswordCorrect && user.id != req.params.userId) {
+          console.log("req params", req.params);
+          if (user.id != req.params.userId) {
             return res
               .status(403)
               .json({ message: "The user action Forbidden" });

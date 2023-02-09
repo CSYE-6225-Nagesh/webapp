@@ -7,16 +7,16 @@ import {
   patchProduct,
 } from "../controller/productController.js";
 import auth from "../middleware/auth.js";
-import user from "../middleware/user.js";
+
 const router = Router();
 
-router.route("/").post(auth, user, createProduct);
+router.route("/").post(auth, createProduct);
 
 router
   .route("/:productId")
   .get(getProduct)
-  .put(auth, user, updateProduct)
-  .delete(auth, user, deleteProduct)
-  .patch(auth, user, patchProduct);
+  .put(auth, updateProduct)
+  .delete(auth, deleteProduct)
+  .patch(auth, patchProduct);
 
 export default router;

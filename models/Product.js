@@ -6,7 +6,7 @@ const Product = db.define(
   "product",
   {
     id: {
-      type: Sequelize.UUID,
+      type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -17,9 +17,7 @@ const Product = db.define(
     sku: {
       type: Sequelize.STRING,
       allowNull: false,
-      unique: {
-        msg: "sku already exists",
-      },
+      unique: true,
     },
     manufacturer: {
       type: Sequelize.STRING,
