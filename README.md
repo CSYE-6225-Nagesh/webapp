@@ -4,7 +4,7 @@ Rest API's created using Express.js to get, create, update Users with mysql Data
 
 ## Setup instructions
 
-### Install node in your local machine
+Install node and mysql in your local machine
 
 Clone the repository
 
