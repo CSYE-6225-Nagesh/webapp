@@ -46,7 +46,7 @@ export const updateProduct = async (req, res) => {
         !description ||
         !sku ||
         !manufacturer ||
-        quantity == undefined
+        quantity === undefined
       ) {
         return res.status(400).json({
           message:
@@ -70,7 +70,7 @@ export const updateProduct = async (req, res) => {
       product.description = description ? description : product.description;
       product.sku = sku ? sku : product.sku;
       product.manufacturer = manufacturer ? manufacturer : product.manufacturer;
-      product.quantity = quantity ? quantity : product.quantity;
+      product.quantity = quantity !== undefined ? quantity : product.quantity;
 
       try {
         await product.save();
@@ -241,7 +241,7 @@ export const patchProduct = async (req, res) => {
       product.description = description ? description : product.description;
       product.sku = sku ? sku : product.sku;
       product.manufacturer = manufacturer ? manufacturer : product.manufacturer;
-      product.quantity = quantity ? quantity : product.quantity;
+      product.quantity = quantity !== undefined ? quantity : product.quantity;
 
       try {
         await product.save();
