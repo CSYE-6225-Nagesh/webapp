@@ -4,7 +4,7 @@ import os from "os";
 import path from "path";
 
 dotenv.config({
-  path: path.resolve(os.homedir() + "/Documents/nodeEnv/.env"),
+  path: path.resolve(os.homedir() + "/Documents/cloud/env/.env"),
 });
 
 console.log("DB Name", process.env.DB_NAME);
