@@ -26,12 +26,7 @@ export const updateProduct = async (req, res) => {
     if (product) {
       const { name, description, sku, manufacturer, quantity } = req.body;
 
-      //Check if unauthenticated fields are updated
-      console.log(product.owner_user_id);
-
-      console.log(req.userId);
-
-      if (product.owner_user_id != req.userId) {
+      if (product.owner_user_id != req.user.id) {
         return res.status(403).json({ message: "The user action Forbidden" });
       }
       if (
@@ -45,7 +40,20 @@ export const updateProduct = async (req, res) => {
         });
       }
 
-      if (quantity <= 0) {
+      //Check if required fields are send
+      if (!name || !description || !sku || !manufacturer || !quantity) {
+        return res.status(400).json({
+          message:
+            "Bad Request: Required fields cannot be empty (name, description, sku, manufacturer, quantity)",
+        });
+      }
+      if (isNaN(quantity)) {
+        return res.status(400).json({
+          message: "Bad Request: quantity should be number",
+        });
+      }
+
+      if (quantity < 0 && quantity > 100) {
         return res
           .status(400)
           .json({ message: "Bad Request: Quantity should be greater than 1" });
@@ -58,11 +66,18 @@ export const updateProduct = async (req, res) => {
       product.quantity = quantity ? quantity : product.quantity;
 
       try {
-        product.save();
-        res.sendStatus(204);
-        return;
-      } catch (err) {
-        return res.status(500).json({ message: err.message });
+        await product.save();
+        return res.sendStatus(204);
+      } catch (error) {
+        console.log("error updating");
+        if (
+          error.errors &&
+          error.errors.length > 0 &&
+          error.errors[0].path === "sku_UNIQUE"
+        ) {
+          return res.status(400).json({ message: "SKU already exists" });
+        }
+        return res.status(400).json({ message: "Cannot add product" });
       }
     } else {
       return res.status(404).json({ message: "Product does not exist" });
@@ -73,7 +88,7 @@ export const updateProduct = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  console.log("user id", req.userId);
+  console.log("user id", req.user.id);
   console.log("create user /v1/user/ has been hit");
   const { name, description, sku, manufacturer, quantity } = req.body;
   try {
@@ -94,25 +109,44 @@ export const createProduct = async (req, res) => {
           "Bad Request: Required fields cannot be empty (name, description, sku, manufacturer, quantity)",
       });
     }
-    //Check if quantity is greater than 0
-    if (quantity <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Bad Request: Quantity should be greater than 1" });
+
+    if (isNaN(quantity)) {
+      return res.status(400).json({
+        message: "Bad Request:  quantity should be number",
+      });
     }
 
+    if (quantity < 0 && quantity > 100) {
+      return res.status(400).json({
+        message:
+          "Bad Request: Quantity should be greater than 1 and less than 100",
+      });
+    }
+
+    console.log(req.user.id);
     const product = {
       name,
       description,
       sku,
       manufacturer,
-      quantity,
-      owner_user_id: req.userId,
+      quantity: Number(quantity),
+      owner_user_id: req.user.id,
     };
 
-    Product.create(product).then((data) => {
+    try {
+      const data = await Product.create(product);
       return res.status(201).json(data);
-    });
+    } catch (error) {
+      console.log(error);
+      if (
+        error.errors &&
+        error.errors.length > 0 &&
+        error.errors[0].path === "sku_UNIQUE"
+      ) {
+        return res.status(400).json({ message: "SKU already exists" });
+      }
+      return res.status(400).json({ message: "Cannot add product" });
+    }
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -121,7 +155,7 @@ export const createProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findOne({ id: req.params.productId });
-    if (product && product.owner_user_id == req.userId) {
+    if (product && product.owner_user_id == req.user.id) {
       Product.destroy({ where: { id: req.params.productId } }).then((data) => {
         return res.status(201).json(data);
       });
@@ -139,10 +173,18 @@ export const patchProduct = async (req, res) => {
       where: { id: req.params.productId },
     });
     if (product) {
+      console.log(req.body);
       const { name, description, sku, manufacturer, quantity } = req.body;
+
       //Check if unauthenticated fields are updated
-      if (product.owner_user_id != req.userId) {
+      if (product.owner_user_id != req.user.id) {
         return res.status(403).json({ message: "The user action Forbidden" });
+      }
+
+      if (!(name || description || sku.trim() || manufacturer || quantity)) {
+        return res.status(400).json({
+          message: "Bad Request: update with proper paramters",
+        });
       }
       if (
         req.body.date_added ||
@@ -155,10 +197,23 @@ export const patchProduct = async (req, res) => {
         });
       }
 
-      if (quantity <= 0) {
-        return res
-          .status(400)
-          .json({ message: "Bad Request: Quantity should be greater than 1" });
+      if (quantity != undefined && isNaN(quantity)) {
+        return res.status(400).json({
+          message: "Bad Request:  quantity should be number",
+        });
+      }
+
+      if (sku === "") {
+        return res.status(400).json({
+          message: "Bad Request:  quantity should be number",
+        });
+      }
+
+      if (quantity < 0 && quantity > 100) {
+        return res.status(400).json({
+          message:
+            "Bad Request: Quantity should be greater than 0 and less than 100",
+        });
       }
 
       product.name = name ? name : product.name;
@@ -168,11 +223,18 @@ export const patchProduct = async (req, res) => {
       product.quantity = quantity ? quantity : product.quantity;
 
       try {
-        product.save();
-        res.sendStatus(204);
-        return;
-      } catch (err) {
-        return res.status(500).json({ message: err.message });
+        await product.save();
+        console.log("error");
+        return res.sendStatus(204);
+      } catch (error) {
+        if (
+          error.errors &&
+          error.errors.length > 0 &&
+          error.errors[0].path === "sku_UNIQUE"
+        ) {
+          return res.status(400).json({ message: "SKU already exists" });
+        }
+        return res.status(400).json({ message: "Update product failed" });
       }
     } else {
       return res.status(404).json({ message: "Product does not exist" });
