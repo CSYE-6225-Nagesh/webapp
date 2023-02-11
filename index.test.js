@@ -5,7 +5,7 @@ describe("Check APIs", function () {
   const mockApp = request(app);
   test("Check if API is working", async function () {
     const response = await mockApp.get("/healthz");
-    expect(response.status).toEqual(200);
+    expect(response.status).toEqual(400);
   });
 
   test("Check if GET user API is working", async function () {
