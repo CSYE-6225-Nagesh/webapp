@@ -33,7 +33,7 @@ variable "DB_PASSWORD" {
 
 variable "AMI_USER" {
   type = string
-  default =  ""
+  default =  "${env("AMI_USER")}"
 }
 
 source "amazon-ebs" "userapp" {
