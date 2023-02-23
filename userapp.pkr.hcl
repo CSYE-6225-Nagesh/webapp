@@ -21,6 +21,12 @@ variable "AWS_SECRET_ACCESS_KEY" {
   default = ""
 }
 
+
+variable "DB_PASSWORD" {
+  type = string
+  default =  env("DB_PASSWORD")
+}
+
 source "amazon-ebs" "userapp" {
   ami_name = "userapp-app-${local.timestamp}"
 
@@ -65,7 +71,7 @@ build {
   provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
-      // "DB_PASSWORD = {{user `DB_PASSWORD`}}"
+      "DB_PASSWORD = {{user `DB_PASSWORD`}}"
     ]
   }
 }
