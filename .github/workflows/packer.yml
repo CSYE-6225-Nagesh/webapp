@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: create env
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: echo "${{ secrets.WEBAPP_ENV }}" > .env
 
       - name: display file
         run: echo "version=$(cat .env)" >> $GITHUB_OUTPUT
@@ -32,5 +32,5 @@ jobs:
       - uses: hashicorp/packer-github-actions@master
         with:
           command: build
-          arguments: -var=AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} -var=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          arguments: -var=AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} -var=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           target: userapp.pkr.hcl

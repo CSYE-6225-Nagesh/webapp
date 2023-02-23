@@ -11,6 +11,16 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
+variable "AWS_ACCESS_KEY" {
+  type = string
+  default = ""
+}
+
+variable "AWS_SECRET_ACCESS_KEY" {
+  type = string
+  default = ""
+}
+
 source "amazon-ebs" "userapp" {
   ami_name = "userapp-app-${local.timestamp}"
 
@@ -50,8 +60,8 @@ build {
 
   provisioner "shell" {
     script = "./app.sh"
-    environment_vars = {
-      DB_PASSWORD = "{{user `DB_PASSWORD`}}"
-    }
+    environment_vars = [
+      "DB_PASSWORD = {{user `DB_PASSWORD`}}"
+    ]
   }
 }
