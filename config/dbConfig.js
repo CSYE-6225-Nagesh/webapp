@@ -3,9 +3,7 @@ import * as dotenv from "dotenv";
 import os from "os";
 import path from "path";
 
-dotenv.config({
-  path: path.resolve(os.homedir() + "/Documents/cloud/env/.env"),
-});
+dotenv.config();
 
 console.log("DB Name", process.env.DB_NAME);
 //DB Connection
