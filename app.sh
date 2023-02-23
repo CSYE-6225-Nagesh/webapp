@@ -26,12 +26,8 @@ mysqladmin -u root --password=nagesh1610 --host=localhost --port=3306 create csy
 
 sudo systemctl enable mariadb
 
-# install unzip
-sudo yum install unzip -y
-
-#Get inside the application
-cd ~/ && unzip webapp.zip
-cd ~/webapp && npm ci
+#
+cd ~/webapp
 
 sudo mkdir -p ~/logs
 #Start app using pm2
