@@ -6,7 +6,7 @@ env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   AMI_USER: ${{ secrets.AMI_USER }}
 jobs:
-  packer-checks:
+  packer-build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
