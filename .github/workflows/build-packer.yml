@@ -1,6 +1,6 @@
 name: Packer Application Build
 on:
-  pull_request:
+  push:
     branches: [main]
 env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
