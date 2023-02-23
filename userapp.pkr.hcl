@@ -13,12 +13,12 @@ locals {
 
 variable "AWS_ACCESS_KEY" {
   type = string
-  default = env(AWS_ACCESS_KEY)
+  default = ""
 }
 
 variable "AWS_SECRET_ACCESS_KEY" {
   type = string
-  default = env(AWS_SECRET_ACCESS_KEY)
+  default = ""
 }
 
 source "amazon-ebs" "userapp" {
@@ -37,10 +37,10 @@ source "amazon-ebs" "userapp" {
 
 
   instance_type = "t2.micro"
-  region = "us-east-1"
+  region = "us-west-2"
   ssh_username = "ec2-user"
-  access_key = "${var.AWS_ACCESS_KEY}"
-  secret_key = "${var.AWS_SECRET_ACCESS_KEY}"
+  access_key = var.AWS_ACCESS_KEY
+  secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
 build {
@@ -48,15 +48,15 @@ build {
     "source.amazon-ebs.userapp"
   ]
 
-  provisioner "file" {
-    source = "./userapp.zip"
-    destination = "/home/ec2-user/userapp.zip"
-  }
+  // provisioner "file" {
+  //   source = "./userapp.zip"
+  //   destination = "/home/ec2-user/userapp.zip"
+  // }
 
-  provisioner "file" {
-    source = "./userapp.zip"
-    destination = "/home/ec2-user/userapp.zip"
-  }
+  // provisioner "file" {
+  //   source = "./userapp.zip"
+  //   destination = "/home/ec2-user/userapp.zip"
+  // }
 
   provisioner "shell" {
     script = "./app.sh"
