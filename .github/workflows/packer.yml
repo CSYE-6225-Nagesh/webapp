@@ -1,0 +1,35 @@
+name: Packer Application Build
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  packer-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: create env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: display file
+        run: echo "version=$(cat .env)" >> $GITHUB_OUTPUT
+
+      - name: Zip Files
+        run: zip -r webapp.zip .
+
+      - name: Packer Init
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
+          target: userapp.pkr.hcl
+
+      - name: Packer Validate
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: validate
+          target: userapp.pkr.hcl
+
+      - uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: -var=AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} -var=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          target: userapp.pkr.hcl
