@@ -69,9 +69,15 @@ build {
   }
 
   provisioner "shell" {
+    inline = [
+      "Echo $DB_PASSWORD"
+    ]
+  }
+
+  provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
-      "DB_PASSWORD = var.AWS_ACCESS_KEY"
+      // "DB_PASSWORD = var.AWS_ACCESS_KEY"
     ]
   }
 }
