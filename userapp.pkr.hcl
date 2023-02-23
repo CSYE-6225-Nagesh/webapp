@@ -71,7 +71,7 @@ build {
   provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
-      "DB_PASSWORD = {{user `DB_PASSWORD`}}"
+      "DB_PASSWORD = var.AWS_ACCESS_KEY"
     ]
   }
 }
