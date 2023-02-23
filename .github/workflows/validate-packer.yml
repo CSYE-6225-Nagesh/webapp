@@ -1,6 +1,6 @@
-name: Packer Application Build
+name: Packer Validate Build
 on:
-  push:
+  pull_request:
     branches: [main]
 env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
