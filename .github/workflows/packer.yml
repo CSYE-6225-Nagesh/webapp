@@ -2,6 +2,8 @@ name: Packer Application Build
 on:
   pull_request:
     branches: [main]
+env:
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 jobs:
   packer-checks:
     runs-on: ubuntu-latest
@@ -10,7 +12,8 @@ jobs:
         node-version: [14.x]
 
     steps:
-    
+      - name: Print DB password
+        run: echo "Hello $NAME"
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
