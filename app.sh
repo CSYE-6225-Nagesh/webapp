@@ -20,7 +20,7 @@ sudo yum install mariadb mariadb-server -y
 
 sudo systemctl start mariadb
 
-sudo mysqladmin -u root password $DB_PASSWORD
+sudo mysqladmin -u root password "nagesh1610"
 
 mysqladmin -u root --password=nagesh1610 --host=localhost --port=3306 create csye_database
 
