@@ -4,6 +4,7 @@ on:
     branches: [main]
 env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  AMI_USER: ${{ secrets.AMI_USER }}
 jobs:
   packer-checks:
     runs-on: ubuntu-latest
