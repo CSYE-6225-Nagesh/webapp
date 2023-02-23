@@ -5,9 +5,21 @@ on:
 jobs:
   packer-checks:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
 
     steps:
+    
       - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Clean install
+        run: npm ci
       - name: create env
         run: echo "${{ secrets.WEBAPP_ENV }}" > .env
 
@@ -15,7 +27,7 @@ jobs:
         run: echo "version=$(cat .env)" >> $GITHUB_OUTPUT
 
       - name: Zip Files
-        run: zip -r webapp.zip .
+        run: zip -r webapp.zip . 
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

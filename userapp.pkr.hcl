@@ -49,8 +49,17 @@ build {
   ]
 
   provisioner "file" {
-    source = "./userapp.zip"
-    destination = "/home/ec2-user/userapp.zip"
+    source = "webapp.zip"
+    destination = "~/"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "cd ~",
+      "sudo mkdir -p webapp",
+      "sudo chmod 755 webapp",
+      "sudo unzip webapp.zip -d ~/webapp"
+    ]
   }
 
   provisioner "shell" {
