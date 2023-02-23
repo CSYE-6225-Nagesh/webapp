@@ -32,5 +32,5 @@ jobs:
       - uses: hashicorp/packer-github-actions@master
         with:
           command: build
-          arguments: -var=AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} -var=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          arguments: -var=AWS_ACCESS_KEY=12345 -var=AWS_SECRET_ACCESS_KEY=12345
           target: userapp.pkr.hcl
