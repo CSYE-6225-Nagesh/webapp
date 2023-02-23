@@ -54,30 +54,33 @@ build {
     "source.amazon-ebs.userapp"
   ]
 
-  provisioner "file" {
-    source = "webapp.zip"
-    destination = "~/"
-  }
+  // provisioner "file" {
+  //   source = "webapp.zip"
+  //   destination = "~/"
+  // }
+
+  // provisioner "shell" {
+  //   inline = [
+  //     "cd ~",
+  //     "sudo mkdir -p webapp",
+  //     "sudo chmod 755 webapp",
+  //     "sudo unzip webapp.zip -d ~/webapp"
+  //   ]
+  // }
 
   provisioner "shell" {
-    inline = [
-      "cd ~",
-      "sudo mkdir -p webapp",
-      "sudo chmod 755 webapp",
-      "sudo unzip webapp.zip -d ~/webapp"
+    environment_vars = [
+      "FOO=nageshsairam1234"
     ]
-  }
-
-  provisioner "shell" {
     inline = [
-      "Echo $DB_PASSWORD"
+      "echo \"FOO is $FOO\"",
     ]
   }
 
   provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
-      // "DB_PASSWORD = var.AWS_ACCESS_KEY"
+      "DB_PASSWORD=nageshsairam1234",
     ]
   }
 }
