@@ -16,6 +16,11 @@ variable "AWS_ACCESS_KEY" {
   default = ""
 }
 
+variable "AWS_REGION" {
+  type = string
+  default = "us-east-1"
+}
+
 variable "AWS_SECRET_ACCESS_KEY" {
   type = string
   default = ""
@@ -25,6 +30,11 @@ variable "AWS_SECRET_ACCESS_KEY" {
 variable "DB_PASSWORD" {
   type = string
   default =   "${env("DB_PASSWORD")}"
+}
+
+variable "DB_NAME" {
+  type = string
+  default =   "${env("DB_NAME")}"
 }
 
 source "amazon-ebs" "userapp" {
@@ -43,10 +53,11 @@ source "amazon-ebs" "userapp" {
 
 
   instance_type = "t2.micro"
-  region = "us-west-2"
   ssh_username = "ec2-user"
+  region = var.AWS_REGION
   access_key = var.AWS_ACCESS_KEY
   secret_key = var.AWS_SECRET_ACCESS_KEY
+  region = var.AWS_REGION
 }
 
 build {
@@ -69,18 +80,10 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = [
-       "DB_PASSWORD=${var.DB_PASSWORD}"
-    ]
-    inline = [
-      "echo \"DB_PASSWORD is $DB_PASSWORD\"",
-    ]
-  }
-
-  provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
       "DB_PASSWORD=${var.DB_PASSWORD}"
+      "DB_NAME=${var.DB_NAME}"
     ]
   }
 }

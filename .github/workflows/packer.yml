@@ -4,6 +4,7 @@ on:
     branches: [main]
 env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_NAME: ${{ secrets.DB_NAME }}
 jobs:
   packer-checks:
     runs-on: ubuntu-latest
@@ -12,8 +13,6 @@ jobs:
         node-version: [14.x]
 
     steps:
-      - name: Print DB password
-        run: echo "Hello $DB_PASSWORD"
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -37,7 +36,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Packer Init
         run: packer init .
