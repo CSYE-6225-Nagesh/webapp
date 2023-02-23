@@ -50,7 +50,7 @@ source "amazon-ebs" "userapp" {
   }
 
 
-  ami_users = [var.AMI_USER];
+  ami_users = [var.AMI_USER]
   instance_type = "t2.micro"
   ssh_username = "ec2-user"
   access_key = var.AWS_ACCESS_KEY
