@@ -20,11 +20,9 @@ sudo yum install mariadb mariadb-server -y
 
 sudo systemctl start mariadb
 
-echo "DB PASSWORD $DB_PASSWORD"
-
 sudo mysqladmin -u root password $DB_PASSWORD
 
-mysqladmin -u root --password=$DB_PASSWORD --host=localhost --port=3306 create cyse_database
+mysqladmin -u root --password=$DB_PASSWORD --host=localhost --port=3306 create $DB_NAME
 
 sudo systemctl enable mariadb
 
