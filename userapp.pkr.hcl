@@ -48,20 +48,20 @@ build {
     "source.amazon-ebs.userapp"
   ]
 
-  provisioner "file" {
-    source = "./userapp.zip"
-    destination = "/home/ec2-user/userapp.zip"
-  }
+  // provisioner "file" {
+  //   source = "./userapp.zip"
+  //   destination = "/home/ec2-user/userapp.zip"
+  // }
 
-  provisioner "file" {
-    source = "./userapp.zip"
-    destination = "/home/ec2-user/userapp.zip"
-  }
+  // provisioner "file" {
+  //   source = "./userapp.zip"
+  //   destination = "/home/ec2-user/userapp.zip"
+  // }
 
   provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
-      "DB_PASSWORD = {{user `DB_PASSWORD`}}"
+      // "DB_PASSWORD = {{user `DB_PASSWORD`}}"
     ]
   }
 }
