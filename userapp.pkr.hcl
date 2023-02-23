@@ -26,15 +26,14 @@ variable "AWS_SECRET_ACCESS_KEY" {
   default = ""
 }
 
-
 variable "DB_PASSWORD" {
   type = string
   default =   "${env("DB_PASSWORD")}"
 }
 
-variable "DB_NAME" {
+variable "AMI_USER" {
   type = string
-  default =   "${env("DB_NAME")}"
+  default =  ""
 }
 
 source "amazon-ebs" "userapp" {
@@ -49,12 +48,11 @@ source "amazon-ebs" "userapp" {
     most_recent = true
     owners      = ["amazon"]
   }
-  # source_ami = "ami-013a129d325529d4d"
 
 
+  ami_users = [var.AMI_USER];
   instance_type = "t2.micro"
   ssh_username = "ec2-user"
-  region = var.AWS_REGION
   access_key = var.AWS_ACCESS_KEY
   secret_key = var.AWS_SECRET_ACCESS_KEY
   region = var.AWS_REGION
@@ -83,7 +81,6 @@ build {
     script = "./app.sh"
     environment_vars = [
       "DB_PASSWORD=${var.DB_PASSWORD}"
-      "DB_NAME=${var.DB_NAME}"
     ]
   }
 }
