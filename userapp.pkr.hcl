@@ -24,7 +24,7 @@ variable "AWS_SECRET_ACCESS_KEY" {
 
 variable "DB_PASSWORD" {
   type = string
-  default =  env("DB_PASSWORD")
+  default =   "${env("DB_PASSWORD")}"
 }
 
 source "amazon-ebs" "userapp" {
@@ -54,33 +54,33 @@ build {
     "source.amazon-ebs.userapp"
   ]
 
-  // provisioner "file" {
-  //   source = "webapp.zip"
-  //   destination = "~/"
-  // }
+  provisioner "file" {
+    source = "webapp.zip"
+    destination = "~/"
+  }
 
-  // provisioner "shell" {
-  //   inline = [
-  //     "cd ~",
-  //     "sudo mkdir -p webapp",
-  //     "sudo chmod 755 webapp",
-  //     "sudo unzip webapp.zip -d ~/webapp"
-  //   ]
-  // }
+  provisioner "shell" {
+    inline = [
+      "cd ~",
+      "sudo mkdir -p webapp",
+      "sudo chmod 755 webapp",
+      "sudo unzip webapp.zip -d ~/webapp"
+    ]
+  }
 
   provisioner "shell" {
     environment_vars = [
-      "FOO=nageshsairam1234"
+       "DB_PASSWORD=${var.DB_PASSWORD}"
     ]
     inline = [
-      "echo \"FOO is $FOO\"",
+      "echo \"DB_PASSWORD is $DB_PASSWORD\"",
     ]
   }
 
   provisioner "shell" {
     script = "./app.sh"
     environment_vars = [
-      "DB_PASSWORD=nageshsairam1234",
+      "DB_PASSWORD=${var.DB_PASSWORD}"
     ]
   }
 }
