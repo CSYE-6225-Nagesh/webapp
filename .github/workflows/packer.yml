@@ -17,20 +17,18 @@ jobs:
       - name: Zip Files
         run: zip -r webapp.zip .
 
-      - name: Packer Init
-        uses: hashicorp/packer-github-actions@master
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          command: init
-          target: userapp.pkr.hcl
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Packer Init
+        run: packer init .
 
       - name: Packer Validate
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: validate
-          target: userapp.pkr.hcl
+        run: packer validate .
 
-      - uses: hashicorp/packer-github-actions@master
-        with:
-          command: build
-          arguments: -var=AWS_ACCESS_KEY=12345 -var=AWS_SECRET_ACCESS_KEY=12345
-          target: userapp.pkr.hcl
+      - name: Packer Build
+        run: packer build .
