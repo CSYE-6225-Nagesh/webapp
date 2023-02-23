@@ -14,36 +14,36 @@ jobs:
     steps:
       - name: Print DB password
         run: echo "Hello $DB_PASSWORD"
-      # - uses: actions/checkout@v3
-      # - name: Use Node.js ${{ matrix.node-version }}
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: ${{ matrix.node-version }}
-      #     cache: 'npm'
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-      # - name: Clean install
-      #   run: npm ci
-      # - name: create env
-      #   run: echo "${{ secrets.WEBAPP_ENV }}" > .env
+      - name: Clean install
+        run: npm ci
+      - name: create env
+        run: echo "${{ secrets.WEBAPP_ENV }}" > .env
 
-      # - name: display file
-      #   run: echo "version=$(cat .env)" >> $GITHUB_OUTPUT
+      - name: display file
+        run: echo "version=$(cat .env)" >> $GITHUB_OUTPUT
 
-      # - name: Zip Files
-      #   run: zip -r webapp.zip . 
+      - name: Zip Files
+        run: zip -r webapp.zip . 
 
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      # - name: Packer Init
-      #   run: packer init .
+      - name: Packer Init
+        run: packer init .
 
-      # - name: Packer Validate
-      #   run: packer validate .
+      - name: Packer Validate
+        run: packer validate .
 
-      # - name: Packer Build
-      #   run: packer build .
+      - name: Packer Build
+        run: packer build .
