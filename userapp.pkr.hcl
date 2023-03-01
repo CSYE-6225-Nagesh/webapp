@@ -29,6 +29,7 @@ variable "AWS_SECRET_ACCESS_KEY" {
 variable "DB_PASSWORD" {
   type = string
   default =   "${env("DB_PASSWORD")}"
+}
 
 variable "AMI_USER" {
   type = string
