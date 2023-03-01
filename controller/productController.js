@@ -166,6 +166,12 @@ export const createProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
+    const images = await Image.findAll({
+      where: { product_id: req.params.productD },
+    });
+    if (images.length > 0) {
+      await Image.destroy({ where: { id: req.params.productId } });
+    }
     const product = await Product.findOne({
       where: { id: req.params.productId },
     });

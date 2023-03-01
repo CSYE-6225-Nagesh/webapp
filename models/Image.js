@@ -1,49 +1,39 @@
 import Sequelize from "sequelize";
 import db from "../config/dbConfig.js";
 
-const Product = db.define(
-  "product",
+const Image = db.define(
+  "image",
   {
-    id: {
+    image_id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    sku: {
+    file_name: {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true,
     },
-    manufacturer: {
+    s3_bucket_path: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
-    description: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    quantity: {
+    product_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
-    },
-    owner_user_id: {
-      type: Sequelize.INTEGER,
       references: {
-        model: "user",
+        model: "product",
         key: "id",
       },
     },
   },
   {
+    updatedAt: false,
     freezeTableName: true,
     timestamps: true,
-    createdAt: "date_added",
-    updatedAt: "date_last_updated",
+    createdAt: "date_created",
   }
 );
 
-export default Product;
+export default Image;
