@@ -7,7 +7,7 @@ import app from "./server.js";
 
 export const start = async () => {
   try {
-    app.listen(process.env.PORT, () => {
+    app.listen(3001, () => {
       console.log(`starting server on port`);
     });
   } catch (e) {
