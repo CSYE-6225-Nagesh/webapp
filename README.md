@@ -42,3 +42,11 @@ For dev mode
 For production
 
 `npm run prod`
+
+## packer validate
+
+`packer validate userapp.pkr.hcl`
+
+## packer build
+
+`packer build userapp.pkr.hcl`
