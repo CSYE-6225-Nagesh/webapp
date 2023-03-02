@@ -7,15 +7,25 @@ import { uploadFile, deleteFile } from "../utils/s3.js";
 export const getAllImages = async (req, res) => {
   console.log("getAllImages");
   try {
-    const images = await Image.findAll({
-      where: {
-        [Op.and]: [{ product_id: req.params.productId }],
-      },
+    const product = await Product.findOne({
+      where: { id: req.params.productId },
     });
-    if (images.length > 0) {
-      res.status(200).json(images);
+    if (!product) {
+      return res.status(404).json({ message: "no product found" });
+    }
+    if (product.owner_user_id == req.user.id) {
+      const images = await Image.findAll({
+        where: {
+          [Op.and]: [{ product_id: req.params.productId }],
+        },
+      });
+      if (images.length > 0) {
+        res.status(200).json(images);
+      } else {
+        return res.status(404).json({ message: "No images found for product" });
+      }
     } else {
-      return res.status(404).json({ message: "No images found for product" });
+      return res.status(403).json({ message: "User action forbidden" });
     }
   } catch (err) {
     res.status(400).json(err.message);
@@ -25,18 +35,28 @@ export const getAllImages = async (req, res) => {
 export const getImage = async (req, res) => {
   console.log("get image has been hit");
   try {
-    const image = await Image.findOne({
-      where: {
-        [Op.and]: [
-          { product_id: req.params.productId },
-          { image_id: req.params.imageId },
-        ],
-      },
+    const product = await Product.findOne({
+      where: { id: req.params.productId },
     });
-    if (image) {
-      res.status(200).json(image);
+    if (!product) {
+      return res.status(404).json({ message: "no product found" });
+    }
+    if (product.owner_user_id == req.user.id) {
+      const image = await Image.findOne({
+        where: {
+          [Op.and]: [
+            { product_id: req.params.productId },
+            { image_id: req.params.imageId },
+          ],
+        },
+      });
+      if (image) {
+        res.status(200).json(image);
+      } else {
+        return res.status(404).json({ message: "No such image" });
+      }
     } else {
-      return res.status(404).json({ message: "No such image" });
+      return res.status(403).json({ message: "User action forbidden" });
     }
   } catch (err) {
     res.status(400).json(err.message);
@@ -48,6 +68,9 @@ export const deleteImage = async (req, res) => {
     const product = await Product.findOne({
       where: { id: req.params.productId },
     });
+    if (!product) {
+      return res.status(404).json({ message: "no product found" });
+    }
     if (product.owner_user_id == req.user.id) {
       const image = await Image.findOne({
         where: {
@@ -77,12 +100,18 @@ export const deleteImage = async (req, res) => {
 };
 
 export const addImage = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "please attach file" });
+  }
   const fileName = `${uuidv4()} ${req.file.originalname}`;
   const fileBuffer = req.file.fileBuffer;
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
     });
+    if (!product) {
+      return res.status(404).json({ message: "no product found" });
+    }
     if (product.owner_user_id == req.user.id) {
       await uploadFile(fileBuffer, fileName, req.file.mimetype);
       const image = {
