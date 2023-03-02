@@ -16,10 +16,6 @@ console.log(bucketName, region, accessKeyId, secretAccessKey);
 
 const s3Client = new S3Client({
   region,
-  credentials: {
-    accessKeyId,
-    secretAccessKey,
-  },
 });
 
 export async function uploadFile(fileBuffer, fileName, mimetype) {

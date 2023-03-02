@@ -1,5 +1,5 @@
 import Product from "../models/Product.js";
-
+import { deleteFile } from "../utils/s3.js";
 export const getProduct = async (req, res) => {
   console.log("Endpoint getProduct has been hit");
   try {
@@ -169,6 +169,14 @@ export const deleteProduct = async (req, res) => {
     const images = await Image.findAll({
       where: { product_id: req.params.productD },
     });
+    try {
+      images.forEach(async (image) => {
+        await deleteFile(image.file_name);
+      });
+    } catch (err) {
+      console.log(error);
+    }
+
     if (images.length > 0) {
       await Image.destroy({ where: { id: req.params.productId } });
     }

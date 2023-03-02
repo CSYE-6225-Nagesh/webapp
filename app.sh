@@ -15,17 +15,6 @@ chmod 755 /home/ec2-user
 #Install pm2
 sudo npm install pm2@latest -g
 
-#install mysql mariadb
-sudo yum install mariadb mariadb-server -y
-
-sudo systemctl start mariadb
-
-sudo mysqladmin -u root password $DB_PASSWORD
-
-mysqladmin -u root --password=$DB_PASSWORD --host=localhost --port=3306 create cyse_database
-
-sudo systemctl enable mariadb
-
 #
 cd ~/webapp
 

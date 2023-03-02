@@ -26,10 +26,6 @@ variable "AWS_SECRET_ACCESS_KEY" {
   default = ""
 }
 
-variable "DB_PASSWORD" {
-  type = string
-  default =   "${env("DB_PASSWORD")}"
-}
 
 variable "AMI_USER" {
   type = string
@@ -79,8 +75,5 @@ build {
 
   provisioner "shell" {
     script = "./app.sh"
-    environment_vars = [
-      "DB_PASSWORD=${var.DB_PASSWORD}"
-    ]
   }
 }

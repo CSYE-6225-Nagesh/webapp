@@ -3,7 +3,6 @@ on:
   push:
     branches: [main]
 env:
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   AMI_USER: ${{ secrets.AMI_USER }}
 jobs:
   packer-build:
@@ -22,11 +21,6 @@ jobs:
 
       - name: Clean install
         run: npm ci
-      - name: create env
-        run: echo "${{ secrets.WEBAPP_ENV }}" > .env
-
-      - name: display file
-        run: echo "version=$(cat .env)" >> $GITHUB_OUTPUT
 
       - name: Zip Files
         run: zip -r webapp.zip . 
