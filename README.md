@@ -1,6 +1,6 @@
 # CSYE 6225 - Cloud Native Web Application
 
-Rest API's created using Express.js to get, create, update Users with mysql Database
+Rest API's created using Express.js to get, create, update Users with mysql Database.
 
 ## Setup instructions
 
