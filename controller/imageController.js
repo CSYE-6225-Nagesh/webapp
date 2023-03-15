@@ -104,7 +104,7 @@ export const addImage = async (req, res) => {
     return res.status(400).json({ message: "please attach file" });
   }
   const fileName = `${uuidv4()} ${req.file.originalname}`;
-  const fileBuffer = req.file.fileBuffer;
+  const fileBuffer = req.file.buffer;
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
