@@ -2,6 +2,7 @@
 
 sleep 30
 
+sudo yum upgrade -y
 sudo yum update -y
 
 #install node version 16
