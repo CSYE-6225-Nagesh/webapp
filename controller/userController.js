@@ -1,10 +1,11 @@
 import User from "../models/User.js";
 import emailValidator from "email-validator";
 import bcrypt from "bcryptjs";
+import statsd from "../utils/statsdClient.js";
 
 //Update User
 export const updateUser = async (req, res) => {
-  console.log("updateUser");
+  statsd.increment("user.update");
   const { first_name, last_name, password } = req.body;
   //Get user from updated req
   const newUser = req.authUser;
@@ -15,7 +16,6 @@ export const updateUser = async (req, res) => {
     });
     if (user) {
       if (user.id != req.params.userId) {
-        console.log("Id wrong");
         return res.status(403).json({ message: "The user action Forbidden" });
       }
       if (
@@ -59,10 +59,8 @@ export const updateUser = async (req, res) => {
 
 //Get User
 export const getUser = (req, res) => {
-  console.log("Endpoint getUser has been hit");
-
+  statsd.increment("user.get");
   const newUser = req.authUser;
-  console.log("req params", req.params);
 
   try {
     //Check if user exists
@@ -70,9 +68,7 @@ export const getUser = (req, res) => {
       where: { username: newUser.name },
     })
       .then((user) => {
-        console.log(user.id);
         if (user) {
-          console.log("req params", req.params);
           if (user.id != req.params.userId) {
             return res
               .status(403)
@@ -97,7 +93,6 @@ export const getUser = (req, res) => {
             res.status(200).json(userDetails);
           }
         } else {
-          console.log("No such user");
           return res.status(404).json({ message: "No such user" });
         }
       })
@@ -111,7 +106,7 @@ export const getUser = (req, res) => {
 
 // Create user
 export const createUser = (req, res) => {
-  console.log("create user /v1/user/ has been hit");
+  statsd.increment("user.create");
   const { first_name, last_name, username, password } = req.body;
   try {
     //Check if illegal values are sent
@@ -143,11 +138,9 @@ export const createUser = (req, res) => {
       username,
       password: hashedPassword,
     };
-    console.log(user);
     //Check if username already exists
     User.findOne({ where: { username: username } }).then((u) => {
       if (u) {
-        console.log("Bad Request: Username already exists.");
         return res
           .status(400)
           .json({ message: "Bad Request: Username already exists." });
@@ -161,7 +154,6 @@ export const createUser = (req, res) => {
             account_created,
             account_updated,
           } = data;
-          console.log("User successfully created!");
           const userDetails = {
             id,
             first_name,

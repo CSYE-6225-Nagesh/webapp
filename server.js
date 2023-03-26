@@ -5,6 +5,8 @@ import cors from "cors";
 import userRouter from "./router/userRouter.js";
 import healthRouter from "./router/healthRouter.js";
 import productRouter from "./router/productRouter.js";
+import morgan from "morgan";
+import collectMetrics from "./middleware/statsd.js";
 
 const app = express();
 
@@ -13,6 +15,8 @@ app.disable("x-powered-by");
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use(morgan("tiny"));
+app.use(collectMetrics);
 
 app.use("/v1/user", userRouter);
 app.use("/v1/product", productRouter);

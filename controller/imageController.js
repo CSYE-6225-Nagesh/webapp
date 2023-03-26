@@ -3,9 +3,10 @@ import Product from "../models/Product.js";
 import { Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import { uploadFile, deleteFile } from "../utils/s3.js";
+import statsd from "../utils/statsdClient.js";
 
 export const getAllImages = async (req, res) => {
-  console.log("getAllImages");
+  statsd.increment("images.getAll");
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
@@ -33,7 +34,7 @@ export const getAllImages = async (req, res) => {
 };
 
 export const getImage = async (req, res) => {
-  console.log("get image has been hit");
+  statsd.increment("images.get");
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
@@ -64,6 +65,7 @@ export const getImage = async (req, res) => {
 };
 
 export const deleteImage = async (req, res) => {
+  statsd.increment("images.delete");
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
@@ -100,6 +102,7 @@ export const deleteImage = async (req, res) => {
 };
 
 export const addImage = async (req, res) => {
+  statsd.increment("images.add");
   if (!req.file) {
     return res.status(400).json({ message: "please attach file" });
   }
@@ -125,6 +128,6 @@ export const addImage = async (req, res) => {
       res.status(403).json({ message: "forbidden" });
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };
