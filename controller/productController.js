@@ -1,9 +1,10 @@
 import Product from "../models/Product.js";
 import Image from "../models/Image.js";
 import { deleteFile } from "../utils/s3.js";
+import statsd from "../utils/statsdClient.js";
 
 export const getProduct = async (req, res) => {
-  console.log("Endpoint getProduct has been hit");
+  statsd.increment("product.get");
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
@@ -19,8 +20,8 @@ export const getProduct = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
+  statsd.increment("product.update");
   try {
-    console.log(req.params.productId);
     const product = await Product.findOne({
       where: { id: req.params.productId },
     });
@@ -78,7 +79,7 @@ export const updateProduct = async (req, res) => {
         await product.save();
         return res.sendStatus(204);
       } catch (error) {
-        console.log("error updating");
+        console.error("error updating");
         if (
           error.errors &&
           error.errors.length > 0 &&
@@ -97,7 +98,7 @@ export const updateProduct = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  console.log("create user /v1/user/ has been hit");
+  statsd.increment("product.create");
   const { name, description, sku, manufacturer, quantity } = req.body;
   try {
     if (
@@ -151,7 +152,7 @@ export const createProduct = async (req, res) => {
       const data = await Product.create(product);
       return res.status(201).json(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (
         error.errors &&
         error.errors.length > 0 &&
@@ -167,6 +168,7 @@ export const createProduct = async (req, res) => {
 };
 
 export const deleteProduct = async (req, res) => {
+  statsd.increment("product.delete");
   try {
     const images = await Image.findAll({
       where: { product_id: req.params.productId },
@@ -176,7 +178,7 @@ export const deleteProduct = async (req, res) => {
         deleteFile(image.file_name);
       });
     } catch (err) {
-      console.log(error);
+      console.error(error);
     }
 
     if (images.length > 0) {
@@ -198,6 +200,7 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const patchProduct = async (req, res) => {
+  statsd.increment("product.patch");
   try {
     const product = await Product.findOne({
       where: { id: req.params.productId },
