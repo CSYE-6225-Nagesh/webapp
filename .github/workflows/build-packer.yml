@@ -1,6 +1,6 @@
 name: Packer Application Build
 on:
-  push:
+  pull_request:
     branches: [main]
 env:
   AMI_USER: ${{ secrets.AMI_USER }}
