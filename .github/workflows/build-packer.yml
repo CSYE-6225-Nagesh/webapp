@@ -43,7 +43,9 @@ jobs:
         run: packer validate .
 
       - name: Packer Build
-        run: echo "LATEST_AMI_ID=$(packer build -machine-readable . | awk -F, '$0 ~/artifact,0,id/ {sub(/^.*:/,\"\",$6); print $6}')" >> $GITHUB_ENV
+        run: | 
+             echo "LATEST_AMI_ID=$(packer build -machine-readable . | awk -F, '$0 ~/artifact,0,id/ {print $6}')" >> $GITHUB_ENV
+             LATEST_AMI_ID=$(echo "$env.LATEST_AMI_ID" | cut -d':' -f2)
 
       - name: Configure AWS Credentials for Environment
         uses: aws-actions/configure-aws-credentials@v1
