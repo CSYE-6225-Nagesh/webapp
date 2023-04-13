@@ -1,6 +1,6 @@
 name: Packer Application Build
 on:
-  pull_request:
+  push:
     branches: [main]
 env:
   AMI_USER: ${{ secrets.AMI_USER }}
@@ -9,14 +9,9 @@ env:
 jobs:
   packer-build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
 
       - name: Clean install
         run: npm ci
@@ -25,7 +20,7 @@ jobs:
         run: npm test
 
       - name: Zip Files
-        run: zip -r webapp.zip . 
+        run: zip -r webapp.zip .
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
