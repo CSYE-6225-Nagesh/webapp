@@ -4,7 +4,7 @@ on:
     branches: [main]
 env:
   AMI_USER: ${{ secrets.AMI_USER }}
-  LATEST_AMI_ID: ami-0c6e6275d4fec06f2
+  LATEST_AMI_ID: ""
 
 jobs: 
   packer-checks:
@@ -37,8 +37,8 @@ jobs:
       - name: Packer Validate
         run: packer validate .
 
-      # - name: Packer Build
-      #   run: echo "LATEST_AMI_ID=$(packer build -machine-readable . | awk -F, '$0 ~/artifact,0,id/ {print $6}')" >> $GITHUB_ENV
+      - name: Packer Build
+        run: echo "LATEST_AMI_ID=$(packer build -machine-readable . | awk -F, '$0 ~/artifact,0,id/ {print $6}')" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials for Environment
         uses: aws-actions/configure-aws-credentials@v1
@@ -48,7 +48,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Create Launch Template Version
-        run: aws ec2 create-launch-template-version --launch-template-id ${{secrets.LAUNCH_TEMPLATE_ID}} --source-version '$Latest' --launch-template-data '{"ImageId":"'"${{env.LATEST_AMI_ID}}"'"}'
+        run: aws ec2 create-launch-template-version --launch-template-id ${{secrets.LAUNCH_TEMPLATE_ID}} --source-version '$Latest' --launch-template-data '{"ImageId":"'$(echo ${{env.LATEST_AMI_ID}} | sed 's/.*://')'"}'
 
       - name: Update Auto Scaling Group
         run: aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${{secrets.AUTO_SCALING_GROUP_NAME}} --launch-template LaunchTemplateName=${{secrets.LAUNCH_TEMPLATE_NAME}},Version='$Latest'
