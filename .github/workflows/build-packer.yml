@@ -53,7 +53,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Create Launch Template Version
-        run: aws ec2 create-launch-template-version --launch-template-id ${{secrets.LAUNCH_TEMPLATE_ID}} --source-version '$Latest' --launch-template-data '{"ImageId":"'$(echo ${{env.LATEST_AMI_ID}} | sed 's/.*://')'"}'
+        run: aws ec2 create-launch-template-version --launch-template-id ${{secrets.LAUNCH_TEMPLATE_ID}} --source-version '$Latest' --launch-template-data '{"ImageId":"'$(echo ${{env.LATEST_AMI_ID}} | cut -d':' -f2)'"}'
 
       - name: Update Auto Scaling Group
         run: aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${{secrets.AUTO_SCALING_GROUP_NAME}} --launch-template LaunchTemplateName=${{secrets.LAUNCH_TEMPLATE_NAME}},Version='$Latest'
