@@ -4,7 +4,7 @@ on:
     branches: [main]
 env:
   AMI_USER: ${{ secrets.AMI_USER }}
-  LATEST_AMI_ID: *:ami-0c6e6275d4fec06f2
+  LATEST_AMI_ID: ami-0c6e6275d4fec06f2
 
 jobs: 
   packer-checks:
