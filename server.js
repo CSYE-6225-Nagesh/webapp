@@ -16,8 +16,8 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 
-app.use("/v1/user", userRouter);
-app.use("/v1/product", productRouter);
+app.use("/v2/user", userRouter);
+app.use("/v2/product", productRouter);
 app.use("/", healthRouter);
 
 export default app;
